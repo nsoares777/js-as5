@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html lang="en">
+    
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CIT 140 Assignment 5 - N.S.</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/handlebars.js/4.1.2/handlebars.min.js"></script>
+</head>
+    
+<body>
+    <div class="container">
+        <h1>Students by Major</h1>
+        <button id="citBtn">CIT Majors</button>
+        <button id="busBtn">Business Majors</button>
+        <table id="studentsTable">
+            <thead>
+                <tr>
+                    <th>Name</th>
+                    <th>Major</th>
+                    <th>Midterm</th>
+                    <th>Final</th>
+                </tr>
+            </thead>
+            <tbody id="studentsTableBody">
+                <!-- Handlebars info -->
+            </tbody>
+        </table>
+    </div>
+
+    <script type="text/x-handlebars-template" id="students-template">
+        {{#each students}}
+        <tr>
+            <td>{{name}}</td>
+            <td>{{major}}</td>
+            <td>{{midterm}}</td>
+            <td>{{final}}</td>
+        </tr>
+        {{/each}}
+    </script>
+
+    <!-- <script src="script.js"></script> -->
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    var citBtn = document.getElementById('citBtn');
+    var busBtn = document.getElementById('busBtn');
+    var studentsTableBody = document.getElementById('studentsTableBody');
+    var studentsTemplate = document.getElementById('students-template').innerHTML;
+
+    var template = Handlebars.compile(studentsTemplate);
+
+    function populateTable(major) {
+        fetch('cit5students.json')
+            .then(function(response) {
+                return response.json();
+            })
+            .then(function(data) {
+                var filteredStudents = data.filter(function(student) {
+                    return student.major === major;
+                });
+                var html = template({ students: filteredStudents });
+                studentsTableBody.innerHTML = html;
+            })
+            .catch(function(error) {
+                console.error('Error fetching data:', error);
+            });
+    }
+
+    citBtn.addEventListener('click', function() {
+        populateTable('CIT');
+    });
+    busBtn.addEventListener('click', function() {
+        populateTable('BUS');
+    });
+
+    // Initialize
+    populateTable('CIT');
+});
+</script>
+    
+</body>
+</html>
